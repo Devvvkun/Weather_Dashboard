@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css"
+      crossorigin="anonymous"
+    />
+    <link href="../src/output.css" rel="stylesheet">
+    <style>
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .fade-in {
+        animation: fadeIn 0.5s ease-out;
+      }
+    </style>
+  </head>
+
+  <body class="min-h-screen w-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col justify-center items-center p-4">
+    
+    <!-- INITIAL SEARCH SCREEN -->
+    <div
+      id="searchScreen"
+      class="max-w-[500px] w-full bg-white/10 backdrop-blur-lg flex flex-col gap-4 justify-start items-center rounded-2xl p-8 shadow-2xl fade-in"
+    >
+      
+      <!-- Icon -->
+      <div 
+        class="text-white font-medium text-5xl mt-4 flex justify-center items-center h-20 w-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse opacity-75"
+      >
+        <i class="ri-map-pin-line"></i>
+      </div>
+      
+      <!-- Heading -->
+      <div class="text-center">
+        <h1 class="font-bold text-4xl md:text-5xl bg-gradient-to-r from-purple-200 via-pink-200 to-purple-200 bg-clip-text text-transparent">
+          Where are you?
+        </h1>
+        
+        <p class="mt-3 text-sm md:text-base font-medium bg-gradient-to-r from-purple-200 via-pink-200 to-purple-200 bg-clip-text text-transparent">
+          Enter your city below to get accurate weather details
+        </p>
+      </div>
+      
+      <!-- Input Field -->
+      <div class="w-full max-w-sm">
+        <input
+          id="cityInput"
+          type="text"
+          placeholder="Please enter here!"
+          class="w-full px-6 py-3 bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl text-white placeholder-purple-300/50 focus:outline-none focus:border-purple-400 transition-all duration-300 hover:bg-white/15"
+        />
+      </div>
+      
+      <!-- Submit Button -->
+      <button 
+        id="submitBtn"
+        class="w-full max-w-[200px] px-7 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+      >
+        Submit
+      </button>
+      
+      <!-- Divider -->
+      <div class="border-t-2 w-full max-w-[320px] border-purple-500/30 my-2"></div>
+      
+      <!-- Alternative Option -->
+      <div class="flex items-center flex-col gap-3">
+        <div class="text-purple-300 text-xl font-bold">
+          or
+        </div>
+        
+        <button 
+          id="locationBtn"
+          class="px-8 py-3 bg-white/10 backdrop-blur-sm border-2 border-white/20 text-white font-semibold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 flex items-center gap-2"
+        >
+          Use my Location
+          <i class="ri-user-location-line"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- WEATHER DISPLAY SCREEN -->
+    <div 
+      id="weatherScreen" 
+      class="hidden max-w-[600px] w-full rounded-2xl shadow-2xl fade-in"
+    >
+      
+      <!-- Main Weather Card -->
+      <div class="bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-t-2xl p-8 relative overflow-hidden">
+        
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-10">
+          <div class="absolute top-0 left-0 w-40 h-40 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+          <div class="absolute bottom-0 right-0 w-60 h-60 bg-white rounded-full translate-x-1/3 translate-y-1/3"></div>
+        </div>
+        
+        <!-- Content -->
+        <div class="relative z-10">
+          <!-- Back Button -->
+          <button 
+            id="backBtn"
+            class="absolute top-0 left-0 text-white/80 hover:text-white transition-colors"
+          >
+            <i class="ri-arrow-left-line text-2xl"></i>
+          </button>
+          
+          <!-- City Name -->
+          <div class="text-center mb-6">
+            <h2 id="displayCity" class="text-white/90 text-lg font-semibold">
+              <!-- API: City name, Country code -->
+              Kanpur, India
+            </h2>
+            <p id="displayDate" class="text-white/70 text-sm mt-1">
+              <!-- API: Current date/time -->
+              Saturday, December 13, 2025
+            </p>
+          </div>
+          
+          <!-- Temperature & Icon -->
+          <div class="flex items-center justify-center gap-6 mb-4">
+            <div id="displayIcon" class="text-8xl">
+              <!-- API: Weather icon/emoji based on condition -->
+              🌥️
+            </div>
+            <div>
+              <div id="displayTemp" class="text-white text-7xl font-bold">
+                <!-- API: Temperature -->
+                28°
+              </div>
+              <div id="displayFeelsLike" class="text-white/80 text-sm">
+                <!-- API: Feels like temperature -->
+                Feels like 30°
+              </div>
+            </div>
+          </div>
+          
+          <!-- Weather Description -->
+          <div class="text-center">
+            <p id="displayCondition" class="text-white text-xl font-medium capitalize">
+              <!-- API: Weather condition -->
+              Partly Cloudy
+            </p>
+            <p id="displayDescription" class="text-white/80 text-sm mt-1">
+              <!-- API: Weather description -->
+              Expect a pleasant day with some clouds
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Weather Details Grid -->
+      <div class="bg-white/10 backdrop-blur-lg rounded-b-2xl p-6">
+        
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          
+          <!-- Humidity -->
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+            <i class="ri-water-percent-line text-blue-300 text-3xl mb-2"></i>
+            <div id="displayHumidity" class="text-white text-2xl font-bold">
+              <!-- API: Humidity percentage -->
+              65%
+            </div>
+            <div class="text-purple-200 text-xs mt-1">Humidity</div>
+          </div>
+          
+          <!-- Wind Speed -->
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+            <i class="ri-windy-line text-green-300 text-3xl mb-2"></i>
+            <div id="displayWind" class="text-white text-2xl font-bold">
+              <!-- API: Wind speed -->
+              12 km/h
+            </div>
+            <div class="text-purple-200 text-xs mt-1">Wind Speed</div>
+          </div>
+          
+          <!-- Pressure -->
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+            <i class="ri-dashboard-line text-yellow-300 text-3xl mb-2"></i>
+            <div id="displayPressure" class="text-white text-2xl font-bold">
+              <!-- API: Atmospheric pressure -->
+              1013 hPa
+            </div>
+            <div class="text-purple-200 text-xs mt-1">Pressure</div>
+          </div>
+          
+          <!-- Visibility -->
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+            <i class="ri-eye-line text-purple-300 text-3xl mb-2"></i>
+            <div id="displayVisibility" class="text-white text-2xl font-bold">
+              <!-- API: Visibility -->
+              10 km
+            </div>
+            <div class="text-purple-200 text-xs mt-1">Visibility</div>
+          </div>
+        </div>
+        
+        <!-- Additional Info -->
+        <div class="grid grid-cols-2 gap-4">
+          
+          <!-- Sunrise -->
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 flex items-center gap-3 border border-white/20">
+            <i class="ri-sun-line text-orange-300 text-3xl"></i>
+            <div>
+              <div class="text-purple-200 text-xs">Sunrise</div>
+              <div id="displaySunrise" class="text-white text-lg font-semibold">
+                <!-- API: Sunrise time -->
+                6:45 AM
+              </div>
+            </div>
+          </div>
+          
+          <!-- Sunset -->
+          <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 flex items-center gap-3 border border-white/20">
+            <i class="ri-moon-line text-indigo-300 text-3xl"></i>
+            <div>
+              <div class="text-purple-200 text-xs">Sunset</div>
+              <div id="displaySunset" class="text-white text-lg font-semibold">
+                <!-- API: Sunset time -->
+                5:42 PM
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Search Again Button -->
+        <button 
+          id="searchAgainBtn"
+          class="w-full mt-6 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95"
+        >
+          Search Another City
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // API Configuration
+      const api_key = "acd8e480b2174f6b83565416251112";
+
+      // DOM Elements
+      const searchScreen = document.getElementById('searchScreen');
+      const weatherScreen = document.getElementById('weatherScreen');
+      const cityInput = document.getElementById('cityInput');
+      const submitBtn = document.getElementById('submitBtn');
+      const locationBtn = document.getElementById('locationBtn');
+      const backBtn = document.getElementById('backBtn');
+      const searchAgainBtn = document.getElementById('searchAgainBtn');
+
+      // Event Listeners
+      submitBtn.addEventListener('click', handleCitySubmit);
+      locationBtn.addEventListener('click', handleLocationRequest);
+      backBtn.addEventListener('click', showSearchScreen);
+      searchAgainBtn.addEventListener('click', showSearchScreen);
+      
+      // Allow Enter key to submit
+      cityInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleCitySubmit();
+      });
+
+      // ✅ UPDATED: Handle City Submit with API Integration
+      async function handleCitySubmit() {
+        const city = cityInput.value.trim();
+        
+        if (!city) {
+          alert('Please enter a city name!');
+          return;
+        }
+
+        // Show loading state
+        submitBtn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Loading...';
+        submitBtn.disabled = true;
+
+        try {
+          // ✅ API CALL: Fetch weather by city name
+          let weather = await fetch(
+            `https://api.weatherapi.com/v1/current.json?key=${api_key}&q=${city}`
+          );
+          
+          if (!weather.ok) {
+            throw new Error('City not found');
+          }
+          
+          const data = await weather.json();
+          console.log(data);
+          
+          // ✅ UPDATE UI: Populate weather data
+          updateWeatherUI(data);
+          
+          // Show weather screen
+          showWeatherScreen();
+          
+        } catch (error) {
+          console.log("Error fetching weather:", error);
+          alert("Failed to fetch weather data. Please check the city name and try again.");
+        } finally {
+          // Reset button
+          submitBtn.innerHTML = 'Submit';
+          submitBtn.disabled = false;
+        }
+      }
+
+      // ✅ UPDATED: Handle Location Request with API Integration
+      async function handleLocationRequest() {
+        if (!navigator.geolocation) {
+          alert('Geolocation is not supported by your browser');
+          return;
+        }
+
+        // Show loading state
+        locationBtn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Getting location...';
+        locationBtn.disabled = true;
+
+        try {
+          // Get user's coordinates
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+          });
+          
+          const userLocation = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+
+          // ✅ API CALL: Fetch weather by coordinates
+          let weather = await fetch(
+            `https://api.weatherapi.com/v1/current.json?key=${api_key}&q=${userLocation.latitude},${userLocation.longitude}`
+          );
+          
+          if (!weather.ok) {
+            throw new Error('Location weather not found');
+          }
+          
+          const data = await weather.json();
+          console.log(data);
+          
+          // ✅ UPDATE UI: Populate weather data
+          updateWeatherUI(data);
+          
+          // Show weather screen
+          showWeatherScreen();
+          
+        } catch (error) {
+          console.log("Error:", error);
+          alert("Failed to detect your location or fetch weather data");
+        } finally {
+          // Reset button
+          locationBtn.innerHTML = 'Use my Location <i class="ri-user-location-line"></i>';
+          locationBtn.disabled = false;
+        }
+      }
+
+      // ✅ NEW FUNCTION: Update UI with API Data
+      function updateWeatherUI(data) {
+        // City and Country
+        document.getElementById('displayCity').textContent = 
+          `${data.location.name}, ${data.location.country}`;
+        
+        // Date - Format current date
+        const date = new Date(data.location.localtime);
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('displayDate').textContent = 
+          date.toLocaleDateString('en-US', options);
+        
+        // Temperature
+        document.getElementById('displayTemp').textContent = 
+          `${Math.round(data.current.temp_c)}°`;
+        
+        // Feels Like Temperature
+        document.getElementById('displayFeelsLike').textContent = 
+          `Feels like ${Math.round(data.current.feelslike_c)}°`;
+        
+        // Weather Condition
+        document.getElementById('displayCondition').textContent = 
+          data.current.condition.text;
+        
+        // Weather Description
+        document.getElementById('displayDescription').textContent = 
+          getWeatherDescription(data.current.condition.text);
+        
+        // Weather Icon (using condition icon from API)
+        document.getElementById('displayIcon').textContent = 
+          getWeatherEmoji(data.current.condition.text);
+        
+        // Humidity
+        document.getElementById('displayHumidity').textContent = 
+          `${data.current.humidity}%`;
+        
+        // Wind Speed
+        document.getElementById('displayWind').textContent = 
+          `${data.current.wind_kph} km/h`;
+        
+        // Pressure
+        document.getElementById('displayPressure').textContent = 
+          `${data.current.pressure_mb} hPa`;
+        
+        // Visibility
+        document.getElementById('displayVisibility').textContent = 
+          `${data.current.vis_km} km`;
+        
+        // Sunrise (from forecast data - note: current endpoint doesn't include this)
+        // You'll need to use forecast API for sunrise/sunset
+        // For now, using dummy data or you can call forecast endpoint
+        document.getElementById('displaySunrise').textContent = '6:45 AM';
+        
+        // Sunset
+        document.getElementById('displaySunset').textContent = '5:42 PM';
+      }
+
+      // ✅ NEW FUNCTION: Get Weather Description
+      function getWeatherDescription(condition) {
+        const descriptions = {
+          'Sunny': 'Expect a bright and sunny day',
+          'Clear': 'Enjoy a clear sky',
+          'Partly cloudy': 'Expect a pleasant day with some clouds',
+          'Cloudy': 'The sky is covered with clouds',
+          'Overcast': 'Gray skies throughout the day',
+          'Mist': 'Reduced visibility due to mist',
+          'Patchy rain possible': 'There might be some rain',
+          'Light rain': 'Light showers expected',
+          'Moderate rain': 'Moderate rainfall expected',
+          'Heavy rain': 'Heavy rainfall expected',
+          'Thundery outbreaks possible': 'Thunderstorms are possible',
+          'Fog': 'Dense fog reducing visibility',
+          'Freezing fog': 'Cold fog with freezing conditions',
+          'Patchy snow possible': 'Snow is possible in some areas',
+          'Light snow': 'Light snowfall expected',
+          'Moderate snow': 'Moderate snowfall expected',
+          'Heavy snow': 'Heavy snowfall expected'
+        };
+        return descriptions[condition] || 'Current weather conditions';
+      }
+
+      // ✅ UPDATED: Weather Emoji Mapping based on WeatherAPI conditions
+      function getWeatherEmoji(condition) {
+        const conditionLower = condition.toLowerCase();
+        
+        if (conditionLower.includes('sunny') || conditionLower.includes('clear')) {
+          return '☀️';
+        } else if (conditionLower.includes('partly cloudy')) {
+          return '⛅';
+        } else if (conditionLower.includes('cloudy') || conditionLower.includes('overcast')) {
+          return '☁️';
+        } else if (conditionLower.includes('rain') || conditionLower.includes('drizzle')) {
+          return '🌧️';
+        } else if (conditionLower.includes('thunder') || conditionLower.includes('storm')) {
+          return '⛈️';
+        } else if (conditionLower.includes('snow') || conditionLower.includes('blizzard')) {
+          return '🌨️';
+        } else if (conditionLower.includes('fog') || conditionLower.includes('mist')) {
+          return '🌫️';
+        } else if (conditionLower.includes('wind')) {
+          return '💨';
+        } else {
+          return '🌥️';
+        }
+      }
+
+      function showWeatherScreen() {
+        searchScreen.classList.add('hidden');
+        weatherScreen.classList.remove('hidden');
+      }
+
+      function showSearchScreen() {
+        weatherScreen.classList.add('hidden');
+        searchScreen.classList.remove('hidden');
+        cityInput.value = ''; // Clear input
+      }
+    </script>
+  </body>
+</html>
